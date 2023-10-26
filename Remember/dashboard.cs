@@ -200,5 +200,11 @@ namespace Remember
                 Slideshow.Close();
             }
         }
+
+        private void QrButton_Click(object sender, EventArgs e)
+        {
+            QRpage qr = new QRpage();
+            qr.Show();
+        }
     }
 }
