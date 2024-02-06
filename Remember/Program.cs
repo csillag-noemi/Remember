@@ -13,7 +13,10 @@ namespace Remember
         [STAThread]
         static void Main()
         {
-            using(SqliteConnection conn = new SqliteConnection(ConfigurationManager.ConnectionStrings["Default"].ConnectionString))
+            var server = new HttpServer();
+            server.Start();
+
+            using (SqliteConnection conn = new SqliteConnection(ConfigurationManager.ConnectionStrings["Default"].ConnectionString))
             {
                 Application.Run(new MainForm(conn));
             }

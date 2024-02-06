@@ -45,8 +45,9 @@ namespace Remember
 
         private void QRPage_Load(object sender, EventArgs e)
         {
-            // Specify the content for the QR code (e.g., a URL or text)
-            string qrCodeContent = "http://whatsapp.com";
+            // Specify the content for the QR code (local IP address)
+            string localIpAddress = HttpServer.GetLocalIPAddress();
+            string qrCodeContent = $"http://{localIpAddress}:5000";
 
             // Generate and display the QR code
             GenerateQRCode(qrCodeContent);
