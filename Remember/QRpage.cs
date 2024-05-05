@@ -4,10 +4,14 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ZXing;
+using ZXing.Presentation;
 using ZXing.QrCode;
 
 namespace Remember
@@ -19,12 +23,21 @@ namespace Remember
             InitializeComponent();
         }
 
-        private void GenerateQRCode(string content)
+        private void GenerateQRCode()
         {
             try
             {
+                // Generate a unique identifier for the desktop app
+                string uniqueId = Guid.NewGuid().ToString();
+
+                // Get the local IP address and a random port number
+                IPAddress ipAddress = GetLocalIPAddress();
+
+                // Get the port number of your Web API server
+                int port = 5000; // Replace this with the actual port number of your Web API server
+
                 // Create a QR code writer
-                BarcodeWriter barcodeWriter = new BarcodeWriter();
+                ZXing.BarcodeWriter barcodeWriter = new ZXing.BarcodeWriter();
                 barcodeWriter.Format = BarcodeFormat.QR_CODE;
                 barcodeWriter.Options = new QrCodeEncodingOptions
                 {
@@ -32,24 +45,52 @@ namespace Remember
                     Height = 300,
                 };
 
+
+                // Generate the QR code content
+                string qrCodeContent = $"http://{ipAddress}:{port}/api/messages";
+
                 // Generate the QR code
-                Bitmap qrCodeBitmap = barcodeWriter.Write(content);
+                Bitmap qrCodeBitmap = barcodeWriter.Write(qrCodeContent);
 
                 // Set the QR code as the image for the PictureBox
                 qrPicBox.Image = qrCodeBitmap;
+
             }
-            catch(Exception ex) {
+            catch (Exception ex)
+            {
                 MessageBox.Show("Error generating QR code: " + ex.Message);
             }
         }
 
+        private IPAddress GetLocalIPAddress()
+        {
+            // Get all network interfaces
+            NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+            // Loop through the network interfaces to find the first non-loopback interface with a valid IP address
+            foreach (NetworkInterface ni in interfaces)
+            {
+                if (ni.OperationalStatus == OperationalStatus.Up && ni.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                {
+                    // Loop through the IP properties to find the first valid IP address
+                    foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
+                    {
+                        if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
+                        {
+                            return ip.Address;
+                        }
+                    }
+                }
+            }
+
+            // If no valid IP address is found, return null
+            return null;
+        }
+
         private void QRPage_Load(object sender, EventArgs e)
         {
-            // Specify the content for the QR code (e.g., a URL or text)
-            string qrCodeContent = "http://whatsapp.com";
-
             // Generate and display the QR code
-            GenerateQRCode(qrCodeContent);
+            GenerateQRCode();
         }
 
         private void backButton_Click(object sender, EventArgs e)

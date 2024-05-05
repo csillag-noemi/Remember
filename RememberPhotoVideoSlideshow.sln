@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remember", "Remember\Remember.csproj", "{5FE87CB3-858E-45CF-BC4E-178165C7497E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RememberAPI", "RememberAPI\RememberAPI.csproj", "{584289E4-F879-4D88-82A8-88A1E7B34203}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{5FE87CB3-858E-45CF-BC4E-178165C7497E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FE87CB3-858E-45CF-BC4E-178165C7497E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FE87CB3-858E-45CF-BC4E-178165C7497E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{584289E4-F879-4D88-82A8-88A1E7B34203}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{584289E4-F879-4D88-82A8-88A1E7B34203}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{584289E4-F879-4D88-82A8-88A1E7B34203}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{584289E4-F879-4D88-82A8-88A1E7B34203}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
