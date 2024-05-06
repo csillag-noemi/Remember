@@ -32,9 +32,14 @@ namespace Remember
 
                 // Get the local IP address and a random port number
                 IPAddress ipAddress = GetLocalIPAddress();
+                if (ipAddress == null)
+                {
+                    MessageBox.Show("No valid IP address found for this machine.");
+                    return;  // Early return if no IP address found
+                }
 
                 // Get the port number of your Web API server
-                int port = 5000; // Replace this with the actual port number of your Web API server
+                int port = 7009; // Replace this with the actual port number of your Web API server
 
                 // Create a QR code writer
                 ZXing.BarcodeWriter barcodeWriter = new ZXing.BarcodeWriter();
@@ -47,7 +52,7 @@ namespace Remember
 
 
                 // Generate the QR code content
-                string qrCodeContent = $"http://{ipAddress}:{port}/api/messages";
+                string qrCodeContent = $"https://{ipAddress}:{port}/api"; 
 
                 // Generate the QR code
                 Bitmap qrCodeBitmap = barcodeWriter.Write(qrCodeContent);
