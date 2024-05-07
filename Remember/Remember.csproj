@@ -165,6 +165,7 @@
     <Compile Include="QRpage.Designer.cs">
       <DependentUpon>QRpage.cs</DependentUpon>
     </Compile>
+    <Compile Include="Services\NetworkService.cs" />
     <Compile Include="SignUpForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -1,4 +1,5 @@
-﻿using Squirrel;
+﻿using Remember.Services;
+using Squirrel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +13,7 @@ namespace Remember
 {
     public partial class Dashboard : Form
     {
+        private NetworkService networkService = NetworkService.GetInstance();
         public static List<string> CurrentImageList { get; set; } = new List<string>();
         private int LastDeletedIndex { get; set; }
         public static SoundPlayer Player { get; set; }
@@ -203,8 +205,10 @@ namespace Remember
 
         private void QrButton_Click(object sender, EventArgs e)
         {
-            QRpage qr = new QRpage();
+            QRpage qr = new QRpage(networkService);
             qr.Show();
         }
+
+        
     }
 }

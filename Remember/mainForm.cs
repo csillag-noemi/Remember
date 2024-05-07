@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using Remember.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,6 +25,7 @@ namespace Remember
         }
 
         SqliteCommand cmd = new SqliteCommand();
+
 
         private void AddVersionNumber()
         {

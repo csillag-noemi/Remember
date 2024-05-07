@@ -4,19 +4,25 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Sockets;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ZXing;
 using ZXing.QrCode;
+using Remember.Services;
 
 namespace Remember
 {
     public partial class QRpage : Form
     {
-        public QRpage()
+        private NetworkService networkService;
+
+        public QRpage(NetworkService networkService)
         {
             InitializeComponent();
+            
         }
 
         private void GenerateQRCode(string content)
@@ -41,15 +47,17 @@ namespace Remember
             catch(Exception ex) {
                 MessageBox.Show("Error generating QR code: " + ex.Message);
             }
+
+            
         }
 
         private void QRPage_Load(object sender, EventArgs e)
         {
-            // Specify the content for the QR code (e.g., a URL or text)
-            string qrCodeContent = "http://whatsapp.com";
-
-            // Generate and display the QR code
+            string ipAddress = GetLocalIPAddress();
+            int port = 1025; // Example port number
+            string qrCodeContent = $"{{\"ip\": \"{ipAddress}\", \"port\": {port}}}";
             GenerateQRCode(qrCodeContent);
+
         }
 
         private void backButton_Click(object sender, EventArgs e)
@@ -58,6 +66,38 @@ namespace Remember
             dashboard.BringToFront();
             dashboard.Activate();
             this.Close();
+        }
+
+        private string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
+
+
+        private void startConn_Click(object sender, EventArgs e)
+        {
+            networkService = NetworkService.GetInstance();
+            networkService.Start();
+            if (networkService != null)
+            {
+                networkService.MessageReceived += NetworkService_MessageReceived;
+            }
+           
+        }
+        private void NetworkService_MessageReceived(string message)
+        {
+            Invoke((MethodInvoker)delegate
+            {
+                MessageBox.Show(message, "Message Received", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            });
         }
     }
 }
