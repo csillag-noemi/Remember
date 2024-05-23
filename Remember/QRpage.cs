@@ -90,7 +90,7 @@ namespace Remember
             {
                 networkService.MessageReceived += NetworkService_MessageReceived;
             }
-           
+
         }
         private void NetworkService_MessageReceived(string message)
         {

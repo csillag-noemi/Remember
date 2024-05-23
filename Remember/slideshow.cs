@@ -190,6 +190,29 @@ namespace Remember
                 timer1.Start();
             }
         }
+
+        internal void HandleCommand(string command)
+        {
+            if (command == "MUSIC_ON")
+            {
+                // Code to turn music on
+                if (Dashboard.Player != null)
+                {
+                    Dashboard.Player.Play();
+                    IsMusicPaused = false;
+                }
+            }
+            else if (command == "MUSIC_OFF")
+            {
+                // Code to turn music off
+                if (Dashboard.Player != null)
+                {
+                    Dashboard.Player.Stop();
+                    IsMusicPaused = true;
+                }
+            }
+        }
+    
     }
 
 
