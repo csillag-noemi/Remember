@@ -107,12 +107,12 @@ namespace Remember.Services
             {
                 Console.WriteLine($"Error handling client {client.Client.RemoteEndPoint}: {ex.Message}");
             }
-            finally
-            {
-                Console.WriteLine($"Closing connection to {client.Client.RemoteEndPoint}");
-                stream.Close();
-                client.Close();
-            }
+            //finally
+            //{
+            //    Console.WriteLine($"Closing connection to {client.Client.RemoteEndPoint}");
+            //    stream.Close();
+            //    client.Close();
+            //}
         }
 
         // Stop the network service
