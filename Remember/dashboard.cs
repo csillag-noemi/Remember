@@ -51,9 +51,40 @@ namespace Remember
             toolTip1.ShowAlways = true;
 
             toolTip1.SetToolTip(this.deleteBtn, "Deletes the selected photo");
+            networkService.MessageReceived += NetworkService_MessageReceived;
         }
 
-        private void BrowseBtn_Click(object sender, EventArgs e)
+        // Handle Android commands
+        private void NetworkService_MessageReceived(string message)
+        {
+            Console.WriteLine($"Received message: {message}"); // Log the message
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new Action<string>(NetworkService_MessageReceivedInternal), message);
+            }
+            else
+            {
+                NetworkService_MessageReceivedInternal(message);
+            }
+        }
+
+        private void NetworkService_MessageReceivedInternal(string message)
+        {
+            Console.WriteLine($"Processing message: {message}");
+            // Handle the message
+            if (Slideshow != null && Slideshow.IsHandleCreated)
+            {
+                Slideshow.HandleCommand(message);
+            }
+            else
+            {
+                Console.WriteLine("Slideshow handle not created yet.");
+            }
+        }
+
+    
+
+    private void BrowseBtn_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofDialog = new OpenFileDialog();
             ofDialog.Title = "Select images";
