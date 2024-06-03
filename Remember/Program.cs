@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
-using Remember.Services;
+﻿using Remember.Services;
 using System;
 using System.Configuration;
 using System.Windows.Forms;
@@ -18,12 +17,7 @@ namespace Remember
         {
             // Initialize and start the network service
             networkService = NetworkService.GetInstance();
-
-            using (SqliteConnection conn = new SqliteConnection(ConfigurationManager.ConnectionStrings["Default"].ConnectionString))
-            {
-                Application.Run(new MainForm(conn));
-            }
-
+            Application.Run(new Dashboard());
             networkService.Stop();
         }
     }
