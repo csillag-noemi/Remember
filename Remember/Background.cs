@@ -16,7 +16,6 @@ namespace Remember
         {
             InitializeComponent();
         }
-
         public void SetImage(Image image)
         {
             pictureBack.Image = image;

@@ -19,14 +19,14 @@ namespace Remember
         public static TransitionSlideshow TransitionSlideshow { get; set; } = new TransitionSlideshow();
         private static Background Background { get; set; }
         private static Direction TransitionDirection { get; set; } = Direction.Right;
-        //public double sliderValue { get; private set; }
 
         private float prevVal;
         private double valueToIncrease = 0;
         private double currentSlideshowOpacity = 1;
         private double opRateUp = 0;
         private double opRateDown = 1;
-
+        private double nextCountIni = 1;
+        private double nextCount = 1;
 
         public Slideshow()
         {
@@ -65,7 +65,7 @@ namespace Remember
                 {
                     DisplayedImageIndex++;
                 }
-                else if (TransitionDirection == Direction.Left)
+                else if(TransitionDirection == Direction.Left)
                 {
                     DisplayedImageIndex--;
                 }
@@ -198,6 +198,7 @@ namespace Remember
             }
         }
         float sliderIni = 0;
+        string sliderDirection;
         internal void HandleCommand(string command)
         {
             //for TRANSITION
@@ -207,19 +208,40 @@ namespace Remember
                 if (float.TryParse(valueString, out float sliderValue))
                 {
                     
-                    if (sliderValue > sliderIni)
+                    if (sliderValue > sliderIni) //upwards
                     {
-                        AndroidOpacityHandler(sliderValue, Direction.Right);
-                        sliderIni = sliderValue;
+                        sliderDirection = "up";
+                        //AndroidOpacityHandler(sliderValue, Direction.Right);
+                        //sliderIni = sliderValue;
                     }
-                    else
+                    else //downwards
                     {
-                        AndroidOpacityHandler(sliderValue, Direction.Left);
-                        sliderIni = sliderValue;
+                        sliderDirection = "down";
+                        //AndroidOpacityHandler(sliderValue, Direction.Left); 
+                        //sliderIni = sliderValue;
                     }
-
+                    AndroidOpacityHandler(sliderValue, sliderDirection);
+                    sliderIni = sliderValue;
                 }
 
+            }
+
+            //for NEXT
+            if(command.Equals("NEXT"))
+            {
+                CompleteTransition();
+                nextCountIni = nextCount;
+                nextCount++;
+            }
+
+            //for DIRECTION
+            if(command.Equals("RIGHT"))
+            {
+                TransitionDirection = Direction.Right;
+            }
+            else if(command.Equals("LEFT"))
+            {
+                TransitionDirection = Direction.Left;
             }
 
             //for MUSIC
@@ -243,28 +265,28 @@ namespace Remember
             }
         }
 
-        internal void AndroidOpacityHandler(float sliderValue, Direction direction)
+        internal void AndroidOpacityHandler(float sliderValue, string sliderDirection)
         {
-            if ((direction == Direction.Right && DisplayedImageIndex == ImagesOnSlideShow.Count() - 1) ||
-                (direction == Direction.Left && DisplayedImageIndex == 0))
+            if ((TransitionDirection == Direction.Right && DisplayedImageIndex == ImagesOnSlideShow.Count() - 1) ||
+                (TransitionDirection == Direction.Left && DisplayedImageIndex == 0))
             {
                 return;
             }
             else
             {
-                
-                TransitionDirection = direction;
+
+                //TransitionDirection = direction;
                 if((sliderValue == 0.05f && sliderIni == 0f) || (sliderValue == 0.95f && sliderIni == 1f)) //prima data cand se instantiaza transitionSlideshow; trebuie doar la inceputul unei tranzitii
                 {
-                    if (direction == Direction.Right)
+                    if (TransitionDirection == Direction.Right)
                     {
                         TransitionSlideshow.ShowSlideshow(0, DisplayedImageIndex + 1);
                         //Background.Hide();
                         //BringToFront();
                     }
-                    else if (direction == Direction.Left)
+                    else if (TransitionDirection == Direction.Left)
                     {
-                        TransitionSlideshow.ShowSlideshow(0, DisplayedImageIndex + 1);
+                        TransitionSlideshow.ShowSlideshow(0, DisplayedImageIndex - 1);
                         //Background.Hide();
                         //BringToFront();
                     }
@@ -273,25 +295,31 @@ namespace Remember
                 
                 BringToFront();
                 valueToIncrease = sliderValue;
-                if (sliderValue == 1.0f)
-                {
-                    CompleteTransition();
-                }
-                else if (sliderValue == 0.0f)
-                {
-                    CompleteTransition();
-                }
-                else
-                {
+                //if (sliderValue == 1.0f)
+                //{
+                //    CompleteTransition();
+                //}
+                //else if (sliderValue == 0.0f)
+                //{
+                //    CompleteTransition();
+                //}
+                //else
+                //{
                     timer2.Start();
-                }
+                //}
             }
         }
 
         private void CompleteTransition()
         {
-            
-            DisplayedImageIndex++;
+            if(TransitionDirection == Direction.Left)
+            {
+                DisplayedImageIndex--;
+            }
+            else
+            {
+                DisplayedImageIndex++;
+            }
             Background.SetImage(Image.FromFile(ImagesOnSlideShow[DisplayedImageIndex].ToString()));
             pictureBox1.Image = Image.FromFile(ImagesOnSlideShow[DisplayedImageIndex].ToString());
             BringToFront();
@@ -306,8 +334,8 @@ namespace Remember
         {
             
             valueToIncrease = Math.Round(valueToIncrease, 3); //have only 3 decimals
-            opRateUp = Math.Round(opRateUp,3);
-            if (opRateUp <= valueToIncrease && TransitionDirection == Direction.Right)
+            opRateUp = Math.Round(opRateUp, 3);
+            if (opRateUp <= valueToIncrease && sliderDirection.Equals("up"))
             {
                 TransitionSlideshow.Opacity = Math.Round(TransitionSlideshow.Opacity + 0.01, 3);
                 Opacity = Math.Round(Opacity - 0.01, 3);
@@ -315,7 +343,7 @@ namespace Remember
                 opRateUp += 0.01;
                 return;
             }
-            else if(opRateDown >= valueToIncrease && TransitionDirection == Direction.Left)
+            else if(opRateDown >= valueToIncrease && sliderDirection.Equals("down"))
             {
                 TransitionSlideshow.Opacity = Math.Round(TransitionSlideshow.Opacity + 0.01, 3);
                 Opacity = Math.Round(Opacity - 0.01, 3);

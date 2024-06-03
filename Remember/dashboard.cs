@@ -51,7 +51,6 @@ namespace Remember
             toolTip1.ShowAlways = true;
 
             toolTip1.SetToolTip(this.deleteBtn, "Deletes the selected photo");
-
             networkService.MessageReceived += NetworkService_MessageReceived;
         }
 
@@ -83,7 +82,9 @@ namespace Remember
             }
         }
 
-        private void BrowseBtn_Click(object sender, EventArgs e)
+    
+
+    private void BrowseBtn_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofDialog = new OpenFileDialog();
             ofDialog.Title = "Select images";
@@ -239,5 +240,6 @@ namespace Remember
             qr.Show();
         }
 
+        
     }
 }

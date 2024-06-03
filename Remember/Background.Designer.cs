@@ -63,7 +63,6 @@
         }
 
         #endregion
-
         private System.Windows.Forms.PictureBox pictureBack;
     }
 }
