@@ -48,19 +48,15 @@ namespace Remember.Services
         // Start the network service
         public void Start()
         {
-            // Only start if not already started
-            //if (tcpListener == null)
-            //{
-                tcpListener = new TcpListener(IPAddress.Any, 1025);
-                tcpListener.Start();
-                cancellationTokenSource = new CancellationTokenSource();
+            tcpListener = new TcpListener(IPAddress.Any, 1025);
+            tcpListener.Start();
+            cancellationTokenSource = new CancellationTokenSource();
 
-                listenerThread = new Thread(() => RunListener(cancellationTokenSource.Token))
-                {
-                    IsBackground = true
-                };
-                listenerThread.Start();
-            //}
+            listenerThread = new Thread(() => RunListener(cancellationTokenSource.Token))
+            {
+                IsBackground = true
+            };
+            listenerThread.Start();
         }
 
         // Run the listener loop
@@ -107,12 +103,6 @@ namespace Remember.Services
             {
                 Console.WriteLine($"Error handling client {client.Client.RemoteEndPoint}: {ex.Message}");
             }
-            //finally
-            //{
-            //    Console.WriteLine($"Closing connection to {client.Client.RemoteEndPoint}");
-            //    stream.Close();
-            //    client.Close();
-            //}
         }
 
         // Stop the network service

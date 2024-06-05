@@ -20,13 +20,14 @@ namespace Remember
         private static Background Background { get; set; }
         private static Direction TransitionDirection { get; set; } = Direction.Right;
 
-        private float prevVal;
         private double valueToIncrease = 0;
         private double currentSlideshowOpacity = 1;
         private double opRateUp = 0;
         private double opRateDown = 1;
-        private double nextCountIni = 1;
-        private double nextCount = 1;
+        float sliderIni = 0;
+        string sliderDirection;
+        bool nextUp = false;
+        bool nextDown = true;
 
         public Slideshow()
         {
@@ -42,7 +43,7 @@ namespace Remember
 
             Background = new Background();
             Background.Show();
-
+           
             pictureBox1.Image = Image.FromFile(ImagesOnSlideShow[DisplayedImageIndex].ToString());
             BringToFront();
         }
@@ -197,8 +198,6 @@ namespace Remember
                 timer1.Start();
             }
         }
-        float sliderIni = 0;
-        string sliderDirection;
         internal void HandleCommand(string command)
         {
             //for TRANSITION
@@ -211,27 +210,20 @@ namespace Remember
                     if (sliderValue > sliderIni) //upwards
                     {
                         sliderDirection = "up";
-                        //AndroidOpacityHandler(sliderValue, Direction.Right);
-                        //sliderIni = sliderValue;
                     }
                     else //downwards
                     {
                         sliderDirection = "down";
-                        //AndroidOpacityHandler(sliderValue, Direction.Left); 
-                        //sliderIni = sliderValue;
                     }
-                    AndroidOpacityHandler(sliderValue, sliderDirection);
+                    OpacityHandler(sliderValue);
                     sliderIni = sliderValue;
                 }
-
             }
 
             //for NEXT
             if(command.Equals("NEXT"))
             {
                 CompleteTransition();
-                nextCountIni = nextCount;
-                nextCount++;
             }
 
             //for DIRECTION
@@ -265,48 +257,30 @@ namespace Remember
             }
         }
 
-        internal void AndroidOpacityHandler(float sliderValue, string sliderDirection)
+        internal void OpacityHandler(float sliderValue)
         {
             if ((TransitionDirection == Direction.Right && DisplayedImageIndex == ImagesOnSlideShow.Count() - 1) ||
                 (TransitionDirection == Direction.Left && DisplayedImageIndex == 0))
             {
+                MessageBox.Show("The slideshow has ended!", "INFO", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             else
             {
-
-                //TransitionDirection = direction;
                 if((sliderValue == 0.05f && sliderIni == 0f) || (sliderValue == 0.95f && sliderIni == 1f)) //prima data cand se instantiaza transitionSlideshow; trebuie doar la inceputul unei tranzitii
                 {
                     if (TransitionDirection == Direction.Right)
                     {
                         TransitionSlideshow.ShowSlideshow(0, DisplayedImageIndex + 1);
-                        //Background.Hide();
-                        //BringToFront();
                     }
                     else if (TransitionDirection == Direction.Left)
                     {
                         TransitionSlideshow.ShowSlideshow(0, DisplayedImageIndex - 1);
-                        //Background.Hide();
-                        //BringToFront();
                     }
                 }
-                //TransitionSlideshow.BringToFront();
-                
                 BringToFront();
                 valueToIncrease = sliderValue;
-                //if (sliderValue == 1.0f)
-                //{
-                //    CompleteTransition();
-                //}
-                //else if (sliderValue == 0.0f)
-                //{
-                //    CompleteTransition();
-                //}
-                //else
-                //{
-                    timer2.Start();
-                //}
+                timer2.Start();
             }
         }
 
@@ -325,42 +299,77 @@ namespace Remember
             BringToFront();
             opRateUp = 0;
             opRateDown = 1;
-            Transitioning = false;
-        }
-
-
-
-        private void timer2_Tick(object sender, EventArgs e)
-        {
-            
-            valueToIncrease = Math.Round(valueToIncrease, 3); //have only 3 decimals
-            opRateUp = Math.Round(opRateUp, 3);
-            if (opRateUp <= valueToIncrease && sliderDirection.Equals("up"))
+            if (nextDown == true)
             {
-                TransitionSlideshow.Opacity = Math.Round(TransitionSlideshow.Opacity + 0.01, 3);
-                Opacity = Math.Round(Opacity - 0.01, 3);
-                currentSlideshowOpacity = Opacity;
-                opRateUp += 0.01;
-                return;
-            }
-            else if(opRateDown >= valueToIncrease && sliderDirection.Equals("down"))
-            {
-                TransitionSlideshow.Opacity = Math.Round(TransitionSlideshow.Opacity + 0.01, 3);
-                Opacity = Math.Round(Opacity - 0.01, 3);
-                currentSlideshowOpacity = Opacity;
-                opRateDown -= 0.01;
-                return;
+                nextDown = false;
+                nextUp = true;
             }
             else
             {
-                opRateUp = valueToIncrease;
-                opRateDown = valueToIncrease;
-                Opacity = currentSlideshowOpacity;
-                timer2.Stop();
+                nextDown = true;
+                nextUp = false;
             }
-
+            Transitioning = false;
         }
 
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            valueToIncrease = Math.Round(valueToIncrease, 3); //have only 3 decimals
+            opRateUp = Math.Round(opRateUp, 3);
+            if(nextDown == true) //slider going upwards for the main transition; normal beh
+            {
+                if (opRateUp <= valueToIncrease && sliderDirection.Equals("up"))
+                {
+                    TransitionSlideshow.Opacity = Math.Round(TransitionSlideshow.Opacity + 0.01, 3);
+                    Opacity = Math.Round(Opacity - 0.01, 3);
+                    currentSlideshowOpacity = Opacity;
+                    opRateUp += 0.01;
+                    return;
+                }
+                else if (opRateDown >= valueToIncrease && sliderDirection.Equals("down"))
+                {
+                    TransitionSlideshow.Opacity = Math.Round(TransitionSlideshow.Opacity - 0.01, 3);
+                    Opacity = Math.Round(Opacity + 0.01, 3);
+                    currentSlideshowOpacity = Opacity;
+                    opRateDown -= 0.01;
+                    return;
+                }
+                else
+                {
+                    stopTimer();
+                }
+            }
+            else if (nextUp == true) //slider goes downwards for the main transition
+            {
+                if (opRateUp <= valueToIncrease && sliderDirection.Equals("up"))
+                {
+                    TransitionSlideshow.Opacity = Math.Round(TransitionSlideshow.Opacity - 0.01, 3);
+                    Opacity = Math.Round(Opacity + 0.01, 3);
+                    currentSlideshowOpacity = Opacity;
+                    opRateUp += 0.01;
+                    return;
+                }
+                else if (opRateDown >= valueToIncrease && sliderDirection.Equals("down"))
+                {
+                    TransitionSlideshow.Opacity = Math.Round(TransitionSlideshow.Opacity + 0.01, 3);
+                    Opacity = Math.Round(Opacity - 0.01, 3);
+                    currentSlideshowOpacity = Opacity;
+                    opRateDown -= 0.01;
+                    return;
+                }
+                else
+                {
+                    stopTimer();
+                }
+            } 
+        }
+        private void stopTimer()
+        {
+            opRateUp = valueToIncrease;
+            opRateDown = valueToIncrease;
+            Opacity = currentSlideshowOpacity;
+            timer2.Stop();
+        }
     }
 
 
